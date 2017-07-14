@@ -11,12 +11,18 @@ server.use(cors({origin: ["http://localhost:8082", "http://www.tsmean.com"], cre
 
 const config: Config = require('../config');
 
-const jsonForMailchimp = function(email) {
-  return {"members": [{"email_address": email, "status": "subscribed"}], "update_existing": true}
+const jsonForMailchimp = function(email, fname) {
+  return {
+    "email_address": email,
+    "status": "pending",
+    "merge_fields": {
+      "FNAME": fname
+    }
+  }
 };
 
 const options = {
-  url: `${config.url}/lists/40dfd5e481`,
+  url: `${config.url}/lists/40dfd5e481/members/`,
   json: true,
   body: undefined,
   auth: {
@@ -47,7 +53,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
 
   if (req.body && req.body.email) {
 
-    options.body = jsonForMailchimp(req.body.email);
+    options.body = jsonForMailchimp(req.body.email, req.body.fname);
 
     request(options, function (err, mailchimpResponse, body) {
 
