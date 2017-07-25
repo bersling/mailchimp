@@ -1,10 +1,12 @@
 import * as request from 'request';
 
 const options = {
-  url: `http://localhost:46254/subscribe`,
+  url: `http://localhost:46254/subscribe?listid=71797e4531`,
   json: true,
   body: {
-    mail: 'blaa@blubb.ch'
+    EMAIL: 'bersling@gmail.com',
+    FNAME: 'da blab',
+    DESCR: 'Ich finde das voll spannend und so.'
   },
   method: 'POST',
   headers: {

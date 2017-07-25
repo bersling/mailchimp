@@ -4,6 +4,7 @@ import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import {Config} from './config.model';
 import * as multer from 'multer';
+import { CoreUtils } from '@tsmean/utils';
 const multipart = multer();
 
 const server = express();
@@ -11,20 +12,18 @@ server.use(cors({origin: ["http://localhost:8082", "http://www.tsmean.com"], cre
 
 const config: Config = require('../config');
 
-const jsonForMailchimp = function(email, fname) {
+const jsonForMailchimp = function(mergeFields) {
   return {
-    "email_address": email,
+    "email_address": mergeFields.EMAIL,
     "status": "pending",
-    "merge_fields": {
-      "FNAME": fname
-    }
+    "merge_fields": mergeFields
   }
 };
 
 const options = {
-  url: `${config.url}/lists/40dfd5e481/members/`,
+  url: undefined, //added dynamically
+  body: undefined, //added dynamically
   json: true,
-  body: undefined,
   auth: {
     user: config.user,
     pass: config.key
@@ -45,33 +44,46 @@ server.get('/', function(req, res) {
 
 server.post('/subscribe', multipart.fields([]), function (req, res) {
 
-  // set correct headers
-  if (req.query) {
-    res.setHeader('AMP-Access-Control-Allow-Source-Origin', req.query.__amp_source_origin);
-  }
-  res.setHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source-Origin');
+  if (req.query && req.query.listid) {
+    const optionsCopy = CoreUtils.deepCopy(options);
 
-  if (req.body && req.body.email) {
+    // set correct headers for amp
+    if (req.query.__amp_source_origin) {
+      res.setHeader('AMP-Access-Control-Allow-Source-Origin', req.query.__amp_source_origin);
+      res.setHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source-Origin');
+    }
 
-    options.body = jsonForMailchimp(req.body.email, req.body.fname);
+    optionsCopy.url = `${config.url}/lists/${req.query.listid}/members/`;
 
-    request(options, function (err, mailchimpResponse, body) {
+    console.log(optionsCopy);
 
-      if (err) {
-        console.error('error posting json: ', err);
-        throw err
-      }
+    if (req.body && req.body.EMAIL) {
 
-      const headers = mailchimpResponse.headers;
-      const statusCode = mailchimpResponse.statusCode;
+      optionsCopy.body = jsonForMailchimp(req.body);
 
-      res.status(statusCode).send(mailchimpResponse);
-    });
+      request(optionsCopy, function (err, mailchimpResponse) {
+
+        if (err) {
+          console.error('error posting json: ', err);
+          throw err
+        }
+
+        const headers = mailchimpResponse.headers;
+        const statusCode = mailchimpResponse.statusCode;
+
+        res.status(statusCode).send(mailchimpResponse);
+      });
+    } else {
+      res.status(400).send('You need a payload with an "EMAIL" property');
+    }
+
   } else {
-    res.status(400).send('You need a payload with a "email" property');
+    res.status(400).send('You need to have the listid query parameter');
   }
 
 });
 
 const port = process.argv[2] || 46254;
-server.listen(port, function() {});
+server.listen(port, function() {
+  console.log(`server started on ${port}`);
+});
