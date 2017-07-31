@@ -1,6 +1,6 @@
 import * as request from 'request';
 import * as express from 'express';
-import * as cors from 'cors';
+const cors = require('cors'); // can't use typings because RegExp not working in typings...
 import * as bodyParser from 'body-parser';
 import {Config} from './config.model';
 import * as multer from 'multer';
@@ -8,7 +8,10 @@ import { CoreUtils } from '@tsmean/utils';
 const multipart = multer();
 
 const server = express();
-server.use(cors({origin: ["http://localhost:8082", "http://www.tsmean.com"], credentials: true}));
+server.use(cors({origin: [
+  "http://localhost:8082",
+  /\.tsmean\.com$/
+], credentials: true}));
 
 const config: Config = require('../config');
 
@@ -48,10 +51,8 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
     const optionsCopy = CoreUtils.deepCopy(options);
 
     // set correct headers for amp
-    if (req.query.__amp_source_origin) {
-      res.setHeader('AMP-Access-Control-Allow-Source-Origin', req.query.__amp_source_origin);
-      res.setHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source-Origin');
-    }
+    res.setHeader('AMP-Access-Control-Allow-Source-Origin', req.query.__amp_source_origin);
+    res.setHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source-Origin');
 
     optionsCopy.url = `${config.url}/lists/${req.query.listid}/members/`;
 
