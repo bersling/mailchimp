@@ -84,7 +84,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
 
 });
 
-const port = process.argv[2] || 46254;
+const port = process.argv[2] || 5000;
 server.listen(port, function() {
   console.log(`server started on ${port}`);
 });
