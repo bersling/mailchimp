@@ -2,7 +2,6 @@ import * as request from 'request';
 import * as express from 'express';
 const cors = require('cors'); // can't use typings because RegExp not working in typings...
 import * as bodyParser from 'body-parser';
-import {Config} from './config.model';
 import * as multer from 'multer';
 import { CoreUtils } from '@tsmean/utils';
 const multipart = multer();
@@ -12,8 +11,6 @@ server.use(cors({origin: [
   "http://localhost:8082",
   /\.tsmean\.com$/
 ], credentials: true}));
-
-const config: Config = require('../config');
 
 const jsonForMailchimp = function(mergeFields) {
   return {
@@ -28,8 +25,8 @@ const options = {
   body: undefined, //added dynamically
   json: true,
   auth: {
-    user: config.user,
-    pass: config.key
+    user: process.env.USER,
+    pass: process.env.KEY
   },
   method: 'POST',
   headers: {
@@ -54,7 +51,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
     res.setHeader('AMP-Access-Control-Allow-Source-Origin', req.query.__amp_source_origin);
     res.setHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source-Origin');
 
-    optionsCopy.url = `${config.url}/lists/${req.query.listid}/members/`;
+    optionsCopy.url = `${process.env.URL}/lists/${req.query.listid}/members/`;
 
     console.log(optionsCopy);
 
@@ -84,7 +81,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
 
 });
 
-const port = process.argv[2] || 5000;
+const port = process.env.PORT || 5000;
 server.listen(port, function() {
   console.log(`server started on ${port}`);
 });
