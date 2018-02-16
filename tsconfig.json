@@ -2,8 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "declaration": true,
-    "outDir": "./dist"
+    "declaration": true
   },
   "include": [
     "src/**/*"

@@ -53,8 +53,6 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
 
     optionsCopy.url = `${process.env.URL}/lists/${req.query.listid}/members/`;
 
-    console.log(optionsCopy);
-
     if (req.body && req.body.EMAIL) {
 
       optionsCopy.body = jsonForMailchimp(req.body);
@@ -81,7 +79,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
 
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 52502;
 server.listen(port, function() {
   console.log(`server started on ${port}`);
 });
