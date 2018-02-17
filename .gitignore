@@ -1,8 +1,9 @@
-config.json
 node_modules
 dist
 npm-debug.log
 .idea
+
+/src/**/*.js
 
 # Local development
 *.env

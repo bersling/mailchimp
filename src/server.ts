@@ -6,6 +6,9 @@ import * as multer from 'multer';
 import { CoreUtils } from '@tsmean/utils';
 const multipart = multer();
 
+const configFile = '/run/secrets/mailchimp.json'; // It's a json file, despite lacking the extension.
+const config = require(configFile);
+
 const server = express();
 server.use(cors({origin: [
   "http://localhost:8082",
@@ -25,8 +28,8 @@ const options = {
   body: undefined, //added dynamically
   json: true,
   auth: {
-    user: process.env.USER,
-    pass: process.env.KEY
+    user: config.user,
+    pass: config.key
   },
   method: 'POST',
   headers: {
@@ -51,7 +54,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
     res.setHeader('AMP-Access-Control-Allow-Source-Origin', req.query.__amp_source_origin);
     res.setHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source-Origin');
 
-    optionsCopy.url = `${process.env.URL}/lists/${req.query.listid}/members/`;
+    optionsCopy.url = `${config.url}/lists/${req.query.listid}/members/`;
 
     if (req.body && req.body.EMAIL) {
 
@@ -79,7 +82,7 @@ server.post('/subscribe', multipart.fields([]), function (req, res) {
 
 });
 
-const port = process.env.PORT || 52502;
+const port = 52502;
 server.listen(port, function() {
   console.log(`server started on ${port}`);
 });
