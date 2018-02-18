@@ -1,0 +1,23 @@
+version: '3.2'
+services:
+  mailchimp:
+    image: bersling/mailchimp
+    secrets:
+      - mailchimp.json
+    restart: always
+    networks:
+      - web
+      - default
+    labels:
+      - "traefik.frontend.rule=Host:mailchimp2.tsmean.com"
+      - "traefik.domain=tsmean.com"
+      - "traefik.port=52502"
+      - "traefik.docker.network=web"
+
+networks:
+  web:
+    external: true
+
+secrets:
+  mailchimp.json:
+    file: ./secrets/mailchimp.json

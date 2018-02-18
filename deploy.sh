@@ -1,16 +1,7 @@
-##!/usr/bin/env bash
-#
-#rootdir="mailchimp"
-#server="ubuntu@35.158.213.131"
-#
-## compile
-#tsc
-#
-#echo "Upload contents"
-#rsync -avz --delete -e 'ssh' "./" "${server}:${rootdir}"
-#
-#echo "(Re-)Start server"
-#ssh ${server} "forever stop ${rootdir}/dist/server.js"
-#ssh ${server} "forever start ${rootdir}/dist/server.js"
-#
-#echo "Done!"
+#!/usr/bin/env bash
+
+server=ubuntu@18.196.229.25
+
+scp -r ./src $server:~/mailchimp
+ssh $server "sudo docker stack deploy -c ./mailchimp/src/docker-compose.yml mailchimp"
+
