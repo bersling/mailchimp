@@ -10,4 +10,4 @@ npm-debug.log
 *.dev
 .DS_Store
 
-/src/secrets
+/secrets

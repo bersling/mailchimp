@@ -2,6 +2,6 @@
 
 server=ubuntu@18.196.229.25
 
-scp -r ./src $server:~/mailchimp
-ssh $server "sudo docker stack deploy -c ./mailchimp/src/docker-compose.yml mailchimp"
+scp -r ./docker-compose.yml $server:~/mailchimp/docker-compose.yml
+ssh $server "sudo docker stack deploy -c ./mailchimp/docker-compose.yml mailchimp"
 
