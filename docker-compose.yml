@@ -2,6 +2,11 @@ version: '3.2'
 services:
   mailchimp:
     image: bersling/mailchimp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
     secrets:
       - mailchimp.json
     networks:

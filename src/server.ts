@@ -42,7 +42,9 @@ server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
 server.get('/', function(req, res) {
-  res.status(200).send('Welcome!');
+  res.status(200).send({
+    welcome: 'Welcome to the mailchimp service API'
+  });
 });
 
 server.post('/subscribe', multipart.fields([]), function (req, res) {
